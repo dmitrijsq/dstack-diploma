@@ -10,3 +10,6 @@ ingress:
 
 storage:
   size: 1Gi
+
+monitoring:
+  enabled: true

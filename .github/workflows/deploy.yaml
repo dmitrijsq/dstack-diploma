@@ -27,8 +27,7 @@ jobs:
       
       - name: Deploy dstack with Helm
         run: |
-          helm install my-dstack ./helm/dstack --wait --timeout 5m
-
+          helm install my-dstack ./helm/dstack --set monitoring.enabled=false --wait --timeout 5m
       
       - name: Verify Pods
         run: kubectl get pods -A
