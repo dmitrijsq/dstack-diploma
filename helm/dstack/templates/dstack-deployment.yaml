@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dstack-deployment
+  labels:
+    app: dstack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dstack
+  template:
+    metadata:
+      labels:
+        app: dstack
+    spec:
+      containers:
+      - name: dstack-container
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DSTACK_ENABLE_PROMETHEUS_METRICS
+          value: "true"
+        volumeMounts:
+        - name: dstack-data-volume
+          mountPath: /root/.dstack/server
+      volumes:
+      - name: dstack-data-volume
+        persistentVolumeClaim:
+          claimName: dstack-pvc

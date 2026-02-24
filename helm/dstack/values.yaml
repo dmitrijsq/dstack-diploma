@@ -1,0 +1,12 @@
+app:
+  name: dstack
+
+image:
+  repository: dstackai/dstack
+  tag: latest
+
+ingress:
+  host: dstack.local
+
+storage:
+  size: 1Gi
