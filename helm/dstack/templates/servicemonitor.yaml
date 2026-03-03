@@ -1,16 +1,18 @@
-{{- if .Values.monitoring.enabled }} 
+{{- if .Values.monitoring.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ .Values.app.name }}-monitor
+  # Используем переменную имени
+  name: {{ .Values.app.name | default "dstack" }}-monitor
   labels:
     release: monitoring
 spec:
   selector:
     matchLabels:
-      app: {{ .Values.app.name }}
+      # Ищем поды по той же переменной имени
+      app: {{ .Values.app.name | default "dstack" }}
   endpoints:
   - port: http
     path: /metrics
-  interval: 15s
+    interval: 15s
 {{- end }}
