@@ -1,15 +1,45 @@
-app:
-  name: dstack
+
+replicaCount: 1
 
 image:
   repository: dstackai/dstack
-  tag: latest
+  pullPolicy: IfNotPresent
+  
+  tag: "latest"
+
+
+service:
+  type: NodePort
+  port: 80           
+  targetPort: 3000   
+  nodePort: 30080   
+
 
 ingress:
-  host: dstack.local
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: dstack.local
+      paths:
+        - path: /
+          pathType: Prefix
+
 
 storage:
   size: 1Gi
+  accessMode: ReadWriteOnce
+
+
+env:
+  DSTACK_ENABLE_PROMETHEUS_METRICS: "true"
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
 monitoring:
   enabled: true

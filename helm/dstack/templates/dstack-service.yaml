@@ -1,15 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: dstack-service
+  name: {{ .Values.app.name | default "dstack" }}-service
   labels:
-    app: dstack
+    app: {{ .Values.app.name | default "dstack" }}
 spec:
-  type: NodePort
+  type: {{ .Values.service.type }}
   selector:
-    app: dstack
+    app: {{ .Values.app.name | default "dstack" }}
   ports:
     - name: http
-      port: 80
-      targetPort: 3000
-      nodePort: 30080
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      {{- if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}

@@ -1,18 +1,25 @@
+{{- if .Values.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: dstack-ingress
+  name: {{ .Values.app.name | default "dstack" }}-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   rules:
-  - host: "{{ .Values.ingress.host }}"
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: dstack-service
-            port:
-              number: 80
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ $.Values.app.name | default "dstack" }}-service
+                port:
+                  number: {{ $.Values.service.port }} # <--- ТЕПЕРЬ ТУТ ПЕРЕМЕННАЯ!
+          {{- end }}
+    {{- end }}
+{{- end }}
