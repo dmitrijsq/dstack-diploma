@@ -1,31 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dstack-deployment
+  name: {{ .Values.app.name | default "dstack" }}-deployment
   labels:
-    app: dstack
+    app: {{ .Values.app.name | default "dstack" }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: dstack
+      app: {{ .Values.app.name | default "dstack" }}
   template:
     metadata:
       labels:
-        app: dstack
+        app: {{ .Values.app.name | default "dstack" }}
     spec:
       containers:
-      - name: dstack-container
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        ports:
-        - containerPort: 3000
-        env:
-        - name: DSTACK_ENABLE_PROMETHEUS_METRICS
-          value: "true"
-        volumeMounts:
-        - name: dstack-data-volume
-          mountPath: /root/.dstack/server
+        - name: dstack-container
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+          
+          
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+
+          volumeMounts:
+            - name: dstack-data-volume
+              mountPath: /root/.dstack/server
+          
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
       volumes:
-      - name: dstack-data-volume
-        persistentVolumeClaim:
-          claimName: dstack-pvc
+        - name: dstack-data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.app.name | default "dstack" }}-pvc
