@@ -30,6 +30,12 @@ jobs:
           helm install monitoring prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace --wait --timeout 10m
 
       
+      - name: Install Loki Stack
+        run: |
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo update
+          helm install loki grafana/loki-stack --namespace monitoring --set grafana.enabled=false,prometheus.enabled=false,alertmanager.enabled=false --wait --timeout 5m
+
       - name: Deploy dstack with Helm
         run: |
           helm install my-dstack ./helm/dstack --wait --timeout 5m
